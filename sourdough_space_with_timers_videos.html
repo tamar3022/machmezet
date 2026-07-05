@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מרחב אפיית לחם מחמצת</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rubik', sans-serif; background-color: #fdfbf7; color: #333; }
+        .tab-active { border-bottom: 4px solid #d97706; color: #b45309; font-weight: 600; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 12px; border: 1px solid #f3f4f6; }
+        .video-container { position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .yt-short { aspect-ratio: 9/16; max-width: 320px; margin: 0 auto; }
+        .yt-standard { aspect-ratio: 16/9; width: 100%; max-width: 600px; margin: 0 auto; }
+        .video-fallback { display: block; text-align: center; margin-top: 8px; color: #b45309; font-weight: 600; text-decoration: underline; }
+        iframe { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+
+        .timer-card { background: linear-gradient(135deg, #fff7ed, #ffffff); border: 1px solid #fed7aa; border-radius: 14px; padding: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+        .timer-display { direction: ltr; font-variant-numeric: tabular-nums; font-size: 2rem; font-weight: 700; color: #92400e; }
+        .timer-btn { border-radius: 999px; padding: 8px 14px; font-weight: 600; transition: 0.2s; }
+        .timer-btn-start { background: #d97706; color: white; }
+        .timer-btn-start:hover { background: #b45309; }
+        .timer-btn-pause { background: #fef3c7; color: #92400e; }
+        .timer-btn-pause:hover { background: #fde68a; }
+        .timer-btn-reset { background: #f3f4f6; color: #374151; }
+        .timer-btn-reset:hover { background: #e5e7eb; }
+        .timer-done { animation: pulseTimer 1s infinite; border-color: #22c55e; }
+        @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-amber-700 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-8 text-center">
+            <i class="fa-solid fa-bread-slice text-5xl mb-4 text-amber-200"></i>
+            <h1 class="text-3xl md:text-5xl font-bold mb-2">מרחב אפיית לחם מחמצת</h1>
+            <p class="text-amber-100 text-lg">סיכום סדנה, הדרכות ווידאו ולוח זמנים שבועי</p>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="bg-white text-gray-600 shadow-md">
+            <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto hide-scrollbar">
+                <button onclick="openTab('starter')" class="tab-btn tab-active px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-jar mr-2"></i> המחמצת (סטארטר)</button>
+                <button onclick="openTab('recipe')" class="tab-btn px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-clipboard-list mr-2"></i> מתכון וחומרים</button>
+                <button onclick="openTab('process')" class="tab-btn px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-hands-bubbles mr-2"></i> תהליך ההכנה</button>
+                <button onclick="openTab('baking')" class="tab-btn px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-fire-burner mr-2"></i> אפייה</button>
+                <button onclick="openTab('timers')" class="tab-btn px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-stopwatch mr-2"></i> טיימרים</button>
+                <button onclick="openTab('videos')" class="tab-btn px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-video mr-2"></i> סרטונים</button>
+                <button onclick="openTab('schedule')" class="tab-btn px-6 py-4 whitespace-nowrap hover:text-amber-700 transition"><i class="fa-solid fa-calendar-days mr-2"></i> לו"ז לכיכר שבת</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+        
+        <!-- TAB 1: Starter -->
+        <section id="starter" class="tab-content block space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-4 border-b-2 border-amber-200 pb-2">יצירת מחמצת חדשה</h2>
+                    <ul class="space-y-3 text-gray-700">
+                        <li><i class="fa-solid fa-check text-green-500 ml-2"></i>מערבבים קמח ומים בכמויות שוות.</li>
+                        <li class="font-semibold mt-4">בכל יום (במשך 7 ימים):</li>
+                        <li><i class="fa-solid fa-trash-can text-red-400 ml-2"></i>זורקים חצי מהמחמצת.</li>
+                        <li><i class="fa-solid fa-plus text-blue-400 ml-2"></i>מוסיפים: 25 גרם מים + 25 גרם קמח.</li>
+                        <li class="mt-4 p-3 bg-amber-50 rounded-lg text-amber-900">
+                            <strong>לאחר שהמחמצת פעילה:</strong> שומרים במקרר. המחמצת טובה לעבודה רק כשהיא פעילה ומבעבעת.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-4 border-b-2 border-amber-200 pb-2">רענון מחמצת</h2>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li>מוציאים מהמקרר לשעה-שעתיים.</li>
+                        <li>זורקים חצי מהכמות.</li>
+                        <li><strong>מאכילים ביחס 1:4:4</strong>:
+                            <ul class="list-disc list-inside mr-6 mt-2 text-gray-600 bg-gray-50 p-3 rounded">
+                                <li>20 גרם מחמצת</li>
+                                <li>80 גרם מים</li>
+                                <li>80 גרם קמח</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <div class="mt-6 border-t pt-4">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">טיפים מיוחדים:</h3>
+                        <p class="mb-2"><i class="fa-solid fa-seedling text-green-600 ml-2"></i>המחמצת שלך עשויה קמח לבן ומעט קמח שיפון.</p>
+                        <div class="bg-blue-50 p-3 rounded-lg text-blue-900 text-sm">
+                            <strong>בפסח או כשרוצים מחמצת פחות חומצית:</strong> מוסיפים מעט יותר קמח ממים. לדוגמה: 20 גרם מים + 30 גרם קמח.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: Recipe -->
+        <section id="recipe" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 max-w-5xl mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-amber-800 mb-2">מתכונים ללחם מחמצת כפרי</h2>
+                    <p class="text-lg text-amber-700 bg-amber-100 inline-block px-4 py-1 rounded-full shadow-sm"><i class="fa-solid fa-bread-slice ml-2"></i>הכמויות במתכונים אלו מתאימות ל-2 כיכרות (כ-650 גרם כל כיכר)</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- מתכון ראשון -->
+                    <div class="bg-amber-50 rounded-xl p-6 border border-amber-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-amber-200 text-amber-900 px-4 py-1 rounded-bl-lg font-bold text-sm">אופציה 1</div>
+                        <h3 class="text-2xl font-bold text-amber-900 mb-4 pb-2 border-b-2 border-amber-200 text-center mt-2">מתכון ראשון</h3>
+                        <ul class="space-y-3 text-lg">
+                            <li class="flex items-center justify-between border-b border-amber-100/60 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-amber-600 ml-3"></i>קמח לחם</span>
+                                <span class="font-bold text-amber-900">250 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-amber-100/60 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-amber-700 ml-3"></i>קמח כפרי</span>
+                                <span class="font-bold text-amber-900">200 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-amber-100/60 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-amber-800 ml-3"></i>קמח מלא</span>
+                                <span class="font-bold text-amber-900">150 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-amber-300 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-amber-900 ml-3"></i>קמח שיפון</span>
+                                <span class="font-bold text-amber-900">50 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-amber-100/60 pb-2 mt-2">
+                                <span><i class="fa-solid fa-droplet text-blue-500 ml-3"></i>מים</span>
+                                <span class="font-bold text-amber-900">400 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-amber-100/60 pb-2">
+                                <span><i class="fa-solid fa-jar text-amber-700 ml-3"></i>מחמצת</span>
+                                <span class="font-bold text-amber-900">160 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-amber-300 pb-2">
+                                <span><i class="fa-solid fa-spoon text-gray-400 ml-3"></i>מלח</span>
+                                <span class="font-bold text-amber-900">16 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between pt-2">
+                                <span><i class="fa-solid fa-glass-water text-blue-400 ml-3"></i>באסינג <span class="text-sm text-gray-500">(הוספת מים נוספת)</span></span>
+                                <span class="font-bold text-amber-900">40-80 גרם</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- מתכון שני -->
+                    <div class="bg-orange-50 rounded-xl p-6 border border-orange-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-orange-200 text-orange-900 px-4 py-1 rounded-bl-lg font-bold text-sm">אופציה 2</div>
+                        <h3 class="text-2xl font-bold text-orange-900 mb-4 pb-2 border-b-2 border-orange-200 text-center mt-2">מתכון שני</h3>
+                        <ul class="space-y-3 text-lg">
+                            <li class="flex items-center justify-between border-b border-orange-100/60 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-orange-600 ml-3"></i>קמח לחם</span>
+                                <span class="font-bold text-orange-900">420 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-orange-100/60 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-orange-800 ml-3"></i>קמח מלא</span>
+                                <span class="font-bold text-orange-900">180 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-orange-300 pb-2">
+                                <span><i class="fa-solid fa-wheat-awn text-orange-900 ml-3"></i>קמח שיפון</span>
+                                <span class="font-bold text-orange-900">50 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-orange-100/60 pb-2 mt-2">
+                                <span><i class="fa-solid fa-droplet text-blue-500 ml-3"></i>מים</span>
+                                <span class="font-bold text-orange-900">400 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-orange-100/60 pb-2">
+                                <span><i class="fa-solid fa-jar text-orange-700 ml-3"></i>מחמצת</span>
+                                <span class="font-bold text-orange-900">160 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between border-b border-orange-300 pb-2">
+                                <span><i class="fa-solid fa-spoon text-gray-400 ml-3"></i>מלח</span>
+                                <span class="font-bold text-orange-900">16 גרם</span>
+                            </li>
+                            <li class="flex items-center justify-between pt-2">
+                                <span><i class="fa-solid fa-glass-water text-blue-400 ml-3"></i>באסינג <span class="text-sm text-gray-500">(הוספת מים נוספת)</span></span>
+                                <span class="font-bold text-orange-900">40-80 גרם</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 mt-8">
+                    <h3 class="font-bold text-lg mb-3"><i class="fa-solid fa-info-circle ml-2 text-blue-600"></i>מידע על סוגי קמחים</h3>
+                    <p class="text-gray-700 mb-3">ככל שהקמח מלא יותר, הוא סופח יותר מים.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li><strong>קמח מלא:</strong> 500 גרם קמח מלא יכול לקבל 320-420 גרם מים (עד כ-90% הידרציה).</li>
+                        <li><strong>קמח פיצה:</strong> חזק ואלסטי.</li>
+                        <li><strong>קמח לחם:</strong> חזק ושומר טוב על הצורה.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="glass-card p-6">
+                <h2 class="text-xl font-bold text-amber-800 mb-4">12 שלבי הכנת הלחם (תקציר)</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">1. שקילה</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">2. ערבוב</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">3. אוטוליזה</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">4. הוספת מחמצת</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">5. לישה</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">6. מלח + מים לפי צורך</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">7. התפחה ראשונה (4-5ש)</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">8. קיפולים (כל חצי שעה)</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">9. Pre Shape</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">10. Final Shape</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">11. התפחה אחרונה (במקרר)</div>
+                    <div class="p-3 bg-amber-100 rounded text-amber-900 font-medium">12. חימום תנור, חריצה, אפייה</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: Process & Videos -->
+        <section id="process" class="tab-content hidden space-y-8">
+            <!-- Autolyse & Kneading -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-4 flex items-center"><span class="bg-amber-200 text-amber-900 rounded-full w-8 h-8 flex items-center justify-center ml-3 text-sm">1</span> אוטוליזה</h2>
+                    <ul class="space-y-3 text-gray-700">
+                        <li>מערבבים קמח ומים רק עד שאין קמח יבש. <strong>אין ללוש!</strong></li>
+                        <li>מכסים וממתינים כ-45 דקות.</li>
+                        <li class="bg-blue-50 p-3 rounded"><strong>בשלב הזה:</strong> החלבונים מתחברים ומתחיל פיתוח גלוטן טבעי.</li>
+                    </ul>
+                    <div class="timer-card mt-5" data-timer-id="autolyse" data-minutes="45">
+                        <div class="flex justify-between items-center gap-3">
+                            <div>
+                                <h3 class="font-bold text-amber-900">טיימר אוטוליזה</h3>
+                                <p class="text-sm text-gray-500">45 דקות</p>
+                            </div>
+                            <div class="timer-display">45:00</div>
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button class="timer-btn timer-btn-start" onclick="startTimer('autolyse')">התחלה</button>
+                            <button class="timer-btn timer-btn-pause" onclick="pauseTimer('autolyse')">עצירה</button>
+                            <button class="timer-btn timer-btn-reset" onclick="resetTimer('autolyse')">איפוס</button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-4 flex items-center"><span class="bg-amber-200 text-amber-900 rounded-full w-8 h-8 flex items-center justify-center ml-3 text-sm">2</span> הלישה</h2>
+                    <ul class="space-y-3 text-gray-700">
+                        <li>מוסיפים את המחמצת ולשים כ-10 דקות (מהירות 2-3 במיקסר).</li>
+                        <li>מדי פעם מנקים את דפנות הקערה עם לקקן.</li>
+                        <li>מוסיפים 16 גרם מלח ומעט מים (עד 40 גרם במידת הצורך).</li>
+                        <li>ממשיכים ללוש עד שהבצק חזק וגמיש.</li>
+                        <li>משמנים קערה ומעבירים אליה את הבצק.</li>
+                    </ul>
+                    <div class="timer-card mt-5" data-timer-id="kneading" data-minutes="10">
+                        <div class="flex justify-between items-center gap-3">
+                            <div>
+                                <h3 class="font-bold text-amber-900">טיימר לישה</h3>
+                                <p class="text-sm text-gray-500">10 דקות</p>
+                            </div>
+                            <div class="timer-display">10:00</div>
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button class="timer-btn timer-btn-start" onclick="startTimer('kneading')">התחלה</button>
+                            <button class="timer-btn timer-btn-pause" onclick="pauseTimer('kneading')">עצירה</button>
+                            <button class="timer-btn timer-btn-reset" onclick="resetTimer('kneading')">איפוס</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bulk Fermentation & Folds -->
+            <div class="glass-card p-6 border-t-4 border-amber-500">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800 flex items-center"><span class="bg-amber-200 text-amber-900 rounded-full w-8 h-8 flex items-center justify-center ml-3 text-sm">3</span> התפחה ראשונה (Bulk) וקיפולים</h2>
+                    <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm"><i class="fa-regular fa-clock ml-1"></i>4-5 שעות</span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-gray-700 mb-4"><strong>המטרה:</strong> שהבצק כמעט יכפיל נפח. בחורף רצוי מקום חמים.</p>
+                        <h3 class="font-bold text-lg mb-2 text-amber-900">טכניקת הקיפולים:</h3>
+                        <p class="text-gray-600 mb-4">במשך ההתפחה, <strong>כל 30 דקות עושים קיפול</strong> כדי לחזק את רשת הגלוטן.</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 bg-gray-50 p-4 rounded">
+                            <li>מותחים צד אחד ל-⅔.</li>
+                            <li>סוגרים.</li>
+                            <li>חוזרים מהצד השני.</li>
+                            <li>מקפלים גם משני הצדדים הנותרים.</li>
+                        </ul>
+
+                        <div class="timer-card mt-5" data-timer-id="bulk" data-minutes="30">
+                            <div class="flex justify-between items-center gap-3">
+                                <div>
+                                    <h3 class="font-bold text-amber-900">טיימר לקיפול הבא</h3>
+                                    <p class="text-sm text-gray-500">30 דקות בין קיפולים</p>
+                                </div>
+                                <div class="timer-display">30:00</div>
+                            </div>
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button class="timer-btn timer-btn-start" onclick="startTimer('bulk')">התחלה</button>
+                                <button class="timer-btn timer-btn-pause" onclick="pauseTimer('bulk')">עצירה</button>
+                                <button class="timer-btn timer-btn-reset" onclick="resetTimer('bulk')">איפוס</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fold Videos -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-center font-semibold mb-2 text-sm text-gray-500">הדגמה: קיפול ראשון</h4>
+                            <div class="video-container yt-short">
+                                <iframe title="קיפול ראשון" src="https://www.youtube-nocookie.com/embed/H5y8wCwfzoQ" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <a class="video-fallback" href="https://youtube.com/shorts/H5y8wCwfzoQ?feature=share" target="_blank" rel="noopener">פתיחה ביוטיוב אם הסרטון לא נטען</a>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-center font-semibold mb-2 text-sm text-gray-500">הדגמה: קיפול שני</h4>
+                            <div class="video-container yt-short">
+                                <iframe title="קיפול שני" src="https://www.youtube-nocookie.com/embed/6H4v4eLAwec" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <a class="video-fallback" href="https://youtube.com/shorts/6H4v4eLAwec" target="_blank" rel="noopener">פתיחה ביוטיוב אם הסרטון לא נטען</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shaping -->
+            <div class="glass-card p-6">
+                <h2 class="text-2xl font-bold text-amber-800 mb-4 flex items-center"><span class="bg-amber-200 text-amber-900 rounded-full w-8 h-8 flex items-center justify-center ml-3 text-sm">4</span> עיצוב הבצק והתפחה שניה</h2>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-xl text-amber-700">Pre Shape (עיצוב ראשוני)</h3>
+                            <p class="text-gray-700 mt-2">יוצרים כדור ומניחים למנוחה קצרה על משטח העבודה.</p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-amber-700">Final Shape (עיצוב סופי)</h3>
+                            <p class="text-gray-700 mt-2">מעצבים את הכיכר הסופית ומניחים בקערת התפחה (בנטון).</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h3 class="font-bold text-blue-900 mb-2">זמני התפחה בקערה:</h3>
+                            <ul class="list-disc list-inside text-blue-800">
+                                <li>חצי שעה בחוץ בטמפרטורת החדר.</li>
+                                <li>לאחר מכן - לילה במקרר.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Preshape Video -->
+                    <div>
+                        <h4 class="text-center font-semibold mb-2 text-gray-600">הדגמת Pre Shape</h4>
+                        <div class="video-container yt-standard">
+                            <iframe title="Pre Shape" src="https://www.youtube-nocookie.com/embed/EtMeCMwFnLA" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <a class="video-fallback" href="https://youtu.be/EtMeCMwFnLA" target="_blank" rel="noopener">פתיחה ביוטיוב אם הסרטון לא נטען</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: Baking -->
+        <section id="baking" class="tab-content hidden space-y-6">
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Baking Prep -->
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-4">לפני האפייה</h2>
+                    <div class="space-y-4 text-gray-700">
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-temperature-arrow-up text-red-500 mt-1 ml-3 text-xl"></i>
+                            <div>
+                                <h3 class="font-bold text-lg">חימום תנור מראש</h3>
+                                <p>מחממים תנור ל-<strong>230°</strong>, חום עליון ותחתון, <strong>45 דקות מראש</strong>.</p>
+                                <p class="text-sm mt-1 text-gray-500">מניחים אבן אפייה או פלטת נירוסטה (או תבנית הפוכה) בשליש התחתון של התנור.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start pt-4 border-t">
+                            <i class="fa-solid fa-cloud text-blue-400 mt-1 ml-3 text-xl"></i>
+                            <div>
+                                <h3 class="font-bold text-lg">יצירת אדים</h3>
+                                <p>חשובים מאוד! <strong>לא להשתמש בטורבו בתחילת האפייה.</strong></p>
+                                <ul class="list-disc list-inside mt-2 text-sm">
+                                    <li>אפשר להשתמש בשפריץ מים, או תבנית עם חלוקי נחל ומים רותחים.</li>
+                                    <li>רצוי להוסיף שפריץ נוסף כל 10 דקות בתחילת האפייה.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start pt-4 border-t bg-amber-50 p-3 rounded mt-4">
+                            <i class="fa-solid fa-clipboard-question text-amber-600 mt-1 ml-3 text-xl"></i>
+                            <div>
+                                <h3 class="font-bold text-lg text-amber-900">איך יודעים שהבצק מוכן?</h3>
+                                <p class="text-sm text-amber-800 mb-1">(אם לא התפיחו במקרר) לוחצים בעדינות על הבצק:</p>
+                                <ul class="text-sm text-amber-800 space-y-1">
+                                    <li><i class="fa-solid fa-xmark text-red-500 ml-1"></i> אם חוזר מיד ← צריך עוד זמן.</li>
+                                    <li><i class="fa-solid fa-check text-green-600 ml-1"></i> אם השקע נשאר או חוזר לאט מאוד ← מוכן לאפייה.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scoring & Baking times -->
+                <div class="space-y-6">
+                    
+                    <!-- Scoring & Scoring Video -->
+                    <div class="glass-card p-6 flex flex-col items-center">
+                        <div class="w-full">
+                            <h2 class="text-2xl font-bold text-amber-800 mb-2">חריצה וסידור</h2>
+                            <ul class="text-gray-700 list-disc list-inside mb-4 text-sm">
+                                <li>מפזרים מעט קמח אורז והופכים את הכיכר (תפר כלפי מעלה).</li>
+                                <li>חורצים בזווית בשליש העליון בעזרת סכין גילוח/להב.</li>
+                                <li><strong>המטרה:</strong> לכוון את כיוון התפיחה בתנור.</li>
+                            </ul>
+                        </div>
+                        <div class="w-full">
+                            <div class="video-container yt-short">
+                                <iframe title="סידור בתבנית וחריצה" src="https://www.youtube-nocookie.com/embed/TybJWeoV5ms" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <a class="video-fallback" href="https://youtube.com/shorts/TybJWeoV5ms?feature=share" target="_blank" rel="noopener">פתיחה ביוטיוב אם הסרטון לא נטען</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Baking Stages -->
+            <div class="glass-card p-6 bg-gradient-to-r from-orange-50 to-red-50 border-none">
+                <h2 class="text-2xl font-bold text-red-800 mb-6 text-center"><i class="fa-solid fa-stopwatch ml-2"></i>שלבי האפייה (סה"כ 45 דקות)</h2>
+                
+                <div class="grid md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100">
+                        <div class="text-3xl font-bold text-red-500 mb-2">1</div>
+                        <h3 class="font-bold text-lg mb-1">שלב ראשון</h3>
+                        <p class="text-gray-500 text-sm mb-2">20-25 דקות</p>
+                        <p class="font-semibold text-gray-800">230° מעלות</p>
+                        <p class="text-sm text-gray-600">עליון ותחתון + הרבה אדים.</p>
+                        <p class="text-xs text-red-400 mt-2">מטרה: הגעה לשיא הגובה</p>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-orange-100">
+                        <div class="text-3xl font-bold text-orange-500 mb-2">2</div>
+                        <h3 class="font-bold text-lg mb-1">שלב שני</h3>
+                        <p class="text-gray-500 text-sm mb-2">עד 5 דקות לסיום</p>
+                        <p class="font-semibold text-gray-800">200° מעלות</p>
+                        <p class="text-sm text-gray-600">עוברים למצב <strong>טורבו</strong>.</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-amber-100">
+                        <div class="text-3xl font-bold text-amber-500 mb-2">3</div>
+                        <h3 class="font-bold text-lg mb-1">סיום</h3>
+                        <p class="text-gray-500 text-sm mb-2">5 דקות אחרונות</p>
+                        <p class="font-semibold text-gray-800">230° מעלות</p>
+                        <p class="text-sm text-gray-600">מוציאים לרשת קירור.</p>
+                        <p class="text-xs font-bold text-amber-700 mt-2">לא פורסים עד שמתקרר לחלוטין!</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- TAB: Timers -->
+        <section id="timers" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 max-w-5xl mx-auto">
+                <h2 class="text-3xl font-bold text-amber-800 mb-2 text-center">טיימרים מובנים לאפייה</h2>
+                <p class="text-center text-gray-600 mb-6">הטיימרים נשמרים בדפדפן, כך שאפשר לעבור בין לשוניות בלי לאבד את הספירה.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="timer-card" data-timer-id="autolyse-main" data-minutes="45">
+                        <h3 class="font-bold text-lg text-amber-900">אוטוליזה</h3>
+                        <p class="text-sm text-gray-500 mb-2">45 דקות</p>
+                        <div class="timer-display">45:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('autolyse-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('autolyse-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('autolyse-main')">איפוס</button></div>
+                    </div>
+                    <div class="timer-card" data-timer-id="kneading-main" data-minutes="10">
+                        <h3 class="font-bold text-lg text-amber-900">לישה</h3>
+                        <p class="text-sm text-gray-500 mb-2">10 דקות</p>
+                        <div class="timer-display">10:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('kneading-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('kneading-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('kneading-main')">איפוס</button></div>
+                    </div>
+                    <div class="timer-card" data-timer-id="folds-main" data-minutes="30">
+                        <h3 class="font-bold text-lg text-amber-900">קיפול הבא</h3>
+                        <p class="text-sm text-gray-500 mb-2">30 דקות</p>
+                        <div class="timer-display">30:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('folds-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('folds-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('folds-main')">איפוס</button></div>
+                    </div>
+                    <div class="timer-card" data-timer-id="room-proof-main" data-minutes="30">
+                        <h3 class="font-bold text-lg text-amber-900">התפחה בקערה לפני מקרר</h3>
+                        <p class="text-sm text-gray-500 mb-2">30 דקות</p>
+                        <div class="timer-display">30:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('room-proof-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('room-proof-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('room-proof-main')">איפוס</button></div>
+                    </div>
+                    <div class="timer-card" data-timer-id="oven-preheat-main" data-minutes="45">
+                        <h3 class="font-bold text-lg text-amber-900">חימום תנור מראש</h3>
+                        <p class="text-sm text-gray-500 mb-2">45 דקות</p>
+                        <div class="timer-display">45:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('oven-preheat-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('oven-preheat-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('oven-preheat-main')">איפוס</button></div>
+                    </div>
+                    <div class="timer-card" data-timer-id="first-bake-main" data-minutes="25">
+                        <h3 class="font-bold text-lg text-amber-900">אפייה ראשונה עם אדים</h3>
+                        <p class="text-sm text-gray-500 mb-2">25 דקות</p>
+                        <div class="timer-display">25:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('first-bake-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('first-bake-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('first-bake-main')">איפוס</button></div>
+                    </div>
+                    <div class="timer-card" data-timer-id="finish-bake-main" data-minutes="5">
+                        <h3 class="font-bold text-lg text-amber-900">סיום אפייה</h3>
+                        <p class="text-sm text-gray-500 mb-2">5 דקות</p>
+                        <div class="timer-display">05:00</div>
+                        <div class="mt-3 flex flex-wrap gap-2"><button class="timer-btn timer-btn-start" onclick="startTimer('finish-bake-main')">התחלה</button><button class="timer-btn timer-btn-pause" onclick="pauseTimer('finish-bake-main')">עצירה</button><button class="timer-btn timer-btn-reset" onclick="resetTimer('finish-bake-main')">איפוס</button></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: Schedule -->
+        <section id="schedule" class="tab-content hidden">
+            <div class="glass-card p-8 max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">לוח זמנים שבועי לכיכרות שבת</h2>
+                
+                <div class="relative border-r-2 border-amber-200 pr-6 space-y-8 text-gray-700">
+                    
+                    <!-- Sunday -->
+                    <div class="relative">
+                        <div class="absolute -right-[33px] bg-amber-500 text-white w-4 h-4 rounded-full mt-1.5 border-4 border-amber-100"></div>
+                        <h3 class="text-xl font-bold text-amber-700 mb-2">יום ראשון</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 bg-white p-4 rounded shadow-sm border border-gray-100">
+                            <li>מוציאים את המחמצת מהמקרר.</li>
+                            <li>משאירים שעה בחוץ.</li>
+                            <li>זורקים חצי.</li>
+                            <li>מאכילים (20 גרם מים + 20 גרם קמח, או לפי יחס הרענון הרצוי).</li>
+                            <li>משאירים כמה שעות בחוץ.</li>
+                            <li>מחזירים למקרר.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Wednesday -->
+                    <div class="relative">
+                        <div class="absolute -right-[33px] bg-amber-500 text-white w-4 h-4 rounded-full mt-1.5 border-4 border-amber-100"></div>
+                        <h3 class="text-xl font-bold text-amber-700 mb-2">יום רביעי</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 bg-white p-4 rounded shadow-sm border border-gray-100">
+                            <li>מוציאים מהמקרר.</li>
+                            <li>משאירים שעה בחוץ.</li>
+                            <li>זורקים חצי ולוקחים 20 גרם מחמצת.</li>
+                            <li>מוסיפים: 80 גרם מים + 80 גרם קמח.</li>
+                            <li class="font-bold text-amber-900">משאירים כל הלילה בחוץ כדי שתהיה פעילה.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Thursday Morning -->
+                    <div class="relative">
+                        <div class="absolute -right-[33px] bg-amber-600 text-white w-4 h-4 rounded-full mt-1.5 border-4 border-amber-100"></div>
+                        <h3 class="text-xl font-bold text-amber-700 mb-2">יום חמישי - בבוקר</h3>
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-100">
+                            <p>לוקחים <strong>20 גרם מהמחמצת הפעילה</strong> להכנת הלחם.</p>
+                            <p class="text-sm text-gray-500 mt-1">את שאר המחמצת מאכילים במידת הצורך ומחזירים למקרר.</p>
+                        </div>
+                    </div>
+
+                    <!-- Thursday Evening -->
+                    <div class="relative">
+                        <div class="absolute -right-[33px] bg-amber-700 text-white w-4 h-4 rounded-full mt-1.5 border-4 border-amber-100"></div>
+                        <h3 class="text-xl font-bold text-amber-700 mb-2">יום חמישי - בערב (הכנת הבצק)</h3>
+                        <div class="bg-amber-50 p-4 rounded shadow-sm border border-amber-100 grid md:grid-cols-2 gap-2 text-sm">
+                            <ul class="space-y-2">
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>שקילה וערבוב מים וקמח.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>אוטוליזה (45 דקות).</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>הוספת מחמצת ולישה.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>הוספת מלח.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>התפחה 4–5 שעות (קיפולים כל חצי שעה).</li>
+                            </ul>
+                            <ul class="space-y-2">
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>Pre Shape.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>מנוחה קצרה.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>Final Shape.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i>חצי שעה בחוץ.</li>
+                                <li><i class="fa-solid fa-arrow-left text-amber-500 ml-2"></i><strong>לילה במקרר.</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Friday -->
+                    <div class="relative">
+                        <div class="absolute -right-[33px] bg-green-500 text-white w-4 h-4 rounded-full mt-1.5 border-4 border-amber-100"></div>
+                        <h3 class="text-xl font-bold text-green-700 mb-2">יום שישי</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 bg-green-50 p-4 rounded shadow-sm border border-green-100">
+                            <li>מחממים תנור 45 דקות מראש.</li>
+                            <li>חורצים את הכיכר.</li>
+                            <li>אופים.</li>
+                            <li>מקררים על רשת.</li>
+                            <li class="font-bold text-green-800 mt-2 text-center text-lg block">כך תהיה לך כיכר טרייה לשבת! 🥖</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- TAB 6: Videos Library -->
+        <section id="videos" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-amber-800 mb-2 text-center">ספריית סרטוני ההדרכה</h2>
+                <p class="text-center text-gray-600 mb-8">כל הסרטונים מוטמעים כאן וגם משובצים ליד השלב המתאים בתהליך.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <h3 class="text-center font-bold text-amber-900 mb-2">קיפול ראשון</h3>
+                        <div class="video-container yt-short">
+                            <iframe title="קיפול ראשון" src="https://www.youtube-nocookie.com/embed/H5y8wCwfzoQ" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        <a class="video-fallback" href="https://youtube.com/shorts/H5y8wCwfzoQ?feature=share" target="_blank" rel="noopener">פתיחה ביוטיוב</a>
+                    </div>
+                    <div>
+                        <h3 class="text-center font-bold text-amber-900 mb-2">קיפול שני</h3>
+                        <div class="video-container yt-short">
+                            <iframe title="קיפול שני" src="https://www.youtube-nocookie.com/embed/6H4v4eLAwec" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        <a class="video-fallback" href="https://youtube.com/shorts/6H4v4eLAwec" target="_blank" rel="noopener">פתיחה ביוטיוב</a>
+                    </div>
+                    <div>
+                        <h3 class="text-center font-bold text-amber-900 mb-2">Pre Shape</h3>
+                        <div class="video-container yt-standard">
+                            <iframe title="Pre Shape" src="https://www.youtube-nocookie.com/embed/EtMeCMwFnLA" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        <a class="video-fallback" href="https://youtu.be/EtMeCMwFnLA" target="_blank" rel="noopener">פתיחה ביוטיוב</a>
+                    </div>
+                    <div>
+                        <h3 class="text-center font-bold text-amber-900 mb-2">סידור בתבנית וחריצה</h3>
+                        <div class="video-container yt-short">
+                            <iframe title="סידור בתבנית וחריצה" src="https://www.youtube-nocookie.com/embed/TybJWeoV5ms" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        <a class="video-fallback" href="https://youtube.com/shorts/TybJWeoV5ms?feature=share" target="_blank" rel="noopener">פתיחה ביוטיוב</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 text-center py-6 mt-auto">
+        <p>נוצר באהבה עבור אופה המחמצת. שבת שלום!</p>
+    </footer>
+
+    <!-- Timer and Tab Logic -->
+
+    <script>
+        const timerStates = {};
+        const timerIntervals = {};
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${secs}`;
+        }
+
+        function getTimerCard(timerId) {
+            return document.querySelector(`[data-timer-id="${timerId}"]`);
+        }
+
+        function saveTimer(timerId) {
+            const state = timerStates[timerId];
+            if (state) localStorage.setItem(`sourdoughTimer_${timerId}`, JSON.stringify(state));
+        }
+
+        function renderTimer(timerId) {
+            const card = getTimerCard(timerId);
+            const state = timerStates[timerId];
+            if (!card || !state) return;
+            const display = card.querySelector('.timer-display');
+            display.textContent = formatTime(Math.max(0, state.remaining));
+            card.classList.toggle('timer-done', state.remaining <= 0);
+        }
+
+        function loadTimers() {
+            document.querySelectorAll('[data-timer-id]').forEach(card => {
+                const timerId = card.dataset.timerId;
+                const duration = Number(card.dataset.minutes) * 60;
+                const saved = localStorage.getItem(`sourdoughTimer_${timerId}`);
+                let state = saved ? JSON.parse(saved) : { duration, remaining: duration, running: false, endTime: null };
+
+                if (state.running && state.endTime) {
+                    state.remaining = Math.max(0, Math.round((state.endTime - Date.now()) / 1000));
+                    if (state.remaining <= 0) state.running = false;
+                }
+
+                state.duration = duration;
+                timerStates[timerId] = state;
+                renderTimer(timerId);
+                if (state.running) runTimerInterval(timerId);
+            });
+        }
+
+        function runTimerInterval(timerId) {
+            clearInterval(timerIntervals[timerId]);
+            timerIntervals[timerId] = setInterval(() => {
+                const state = timerStates[timerId];
+                if (!state || !state.running) return;
+                state.remaining = Math.max(0, Math.round((state.endTime - Date.now()) / 1000));
+                if (state.remaining <= 0) {
+                    state.running = false;
+                    clearInterval(timerIntervals[timerId]);
+                    try {
+                        const beep = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVYGAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg');
+                        beep.play();
+                    } catch (e) {}
+                }
+                renderTimer(timerId);
+                saveTimer(timerId);
+            }, 1000);
+        }
+
+        function startTimer(timerId) {
+            const state = timerStates[timerId];
+            if (!state) return;
+            if (state.remaining <= 0) state.remaining = state.duration;
+            state.running = true;
+            state.endTime = Date.now() + state.remaining * 1000;
+            saveTimer(timerId);
+            runTimerInterval(timerId);
+            renderTimer(timerId);
+        }
+
+        function pauseTimer(timerId) {
+            const state = timerStates[timerId];
+            if (!state) return;
+            if (state.running && state.endTime) {
+                state.remaining = Math.max(0, Math.round((state.endTime - Date.now()) / 1000));
+            }
+            state.running = false;
+            clearInterval(timerIntervals[timerId]);
+            saveTimer(timerId);
+            renderTimer(timerId);
+        }
+
+        function resetTimer(timerId) {
+            const state = timerStates[timerId];
+            if (!state) return;
+            state.running = false;
+            state.remaining = state.duration;
+            state.endTime = null;
+            clearInterval(timerIntervals[timerId]);
+            saveTimer(timerId);
+            renderTimer(timerId);
+        }
+
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('tab-active');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('block');
+            event.currentTarget.classList.add('tab-active');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTimers);
+    </script>
+</body>
+</html>
