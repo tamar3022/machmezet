@@ -396,57 +396,6 @@ END:VCALENDAR`;
 93a85e7f-0156-475c-bd89-337f3883d9c9.png
 ככה?
 
-כן! 👍 זה נראה מצוין. הכרטיס הוכנס במקום הנכון, ואני רואה שגם סגרת את ה־</div> במקום הנכון.
-
-נשאר רק שלב אחד כדי שהכפתור באמת יעבוד:
-
-צריך להוסיף את פונקציית JavaScript
-גללי עד סוף הקובץ. את אמורה לראות משהו כמו:
-
-<script>
-    function openTab(tabId) {
-        ...
-    }
-</script>
-
-</body>
-</html>
-את הפונקציה לא שמים בתוך openTab, אלא לפניה או אחריה, בתוך אותו <script>.
-
-כלומר זה ייראה בערך כך:
-
-<script>
-
-function openTab(tabId) {
-   ...
-}
-
-function downloadSourdoughCalendar() {
-   ...
-}
-
-</script>
-או:
-
-<script>
-
-function downloadSourdoughCalendar() {
-   ...
-}
-
-function openTab(tabId) {
-   ...
-}
-
-</script>
-שתי האפשרויות תקינות.
-
-כדי שלא יהיו טעויות
-📷 שלחי לי צילום מסך של סוף הקובץ (בערך 30 השורות האחרונות), ואני אגיד לך בדיוק איפה להדביק את הפונקציה.
-
-כך נוודא שהכפתור יעבוד בפעם הראשונה בלי שגיאות.
-
-
 
 Pasted text(8).txt
 Document
@@ -465,6 +414,85 @@ Thought for 50s
 להורדת הקובץ החדש index.html
 
 ב־GitHub: לפתוח את index.html → ללחוץ ✏️ → למחוק הכל → להדביק את הקוד החדש → Commit changes.
+
+
+
+התזכורת מופפיעה אבל לחיצה עליה לא עושה כלום
+
+Thought for 39s
+כן — כנראה הכפתור מופיע, אבל פונקציית ההורדה לא נקשרת כמו שצריך.
+
+הכנתי לך קובץ מתוקן שבו הכפתור עובד בצורה יציבה יותר וגם מציג הודעה אחרי הלחיצה:
+
+הורדת index מתוקן
+
+ב־GitHub החליפי את כל התוכן של index.html בתוכן של הקובץ הזה, ואז לחצי Commit changes.
+
+
+
+אפשר שיפתח ישר את גוגל?
+
+כן, ואפילו עדיף. 👍
+
+במקום להוריד קובץ, אפשר לפתוח את Google Calendar ישירות עם אירוע מוכן. המשתמש רק לוחץ Save.
+
+אבל יש מגבלה אחת חשובה:
+Google Calendar לא מאפשר ליצור כמה אירועים חוזרים שונים בלחיצה אחת (ראשון, רביעי, חמישי ושישי). לכן יש שתי אפשרויות:
+
+אפשרות 1 (מומלצת) ⭐⭐⭐⭐⭐
+ארבעה כפתורים:
+
+🗓️ ראשון 18:00
+🗓️ רביעי 18:00
+🗓️ חמישי 16:00
+🗓️ שישי 08:00
+
+כל לחיצה פותחת את Google Calendar עם האירוע המתאים.
+
+היתרון:
+
+עובד בכל מחשב ובטלפון.
+
+לא מוריד קבצים.
+
+מאוד אמין.
+
+אפשרות 2
+כפתור אחד שמוסיף קובץ .ics עם כל האירועים.
+
+אני ממליץ על אפשרות 1
+זה גם נראה יפה באתר. למשל:
+
+🔔 הוסף תזכורות
+
+[📅 ראשון]
+[📅 רביעי]
+[📅 חמישי]
+[📅 שישי]
+כל כפתור פותח את Google Calendar עם האירוע המתאים, והמשתמש רק לוחץ Save.
+
+אני יכול להכין עבורך
+אני יכול להכין גרסה שבה:
+
+אין הורדת קבצים בכלל.
+
+ארבעת הכפתורים פותחים ישירות את Google Calendar.
+
+האירועים מוגדרים כחוזרים בכל שבוע.
+
+העיצוב יהיה תואם בדיוק לעיצוב של האתר שלך.
+
+זו לדעתי תהיה חוויה הרבה יותר נוחה מהפתרון של הורדת קובץ.
+
+
+אשמח
+
+Thought for 37s
+כן. הכנתי לך גרסה חדשה שבה התזכורות פותחות ישר את Google Calendar — ארבעה כפתורים נפרדים, אחד לכל יום.
+
+להורדת הקובץ החדש
+
+תחליפי איתו את התוכן של index.html ב־GitHub ותלחצי Commit changes.
 
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -536,21 +564,27 @@ Thought for 50s
   </h2>
 
   <p class="text-gray-700 mb-4">
-    לחצי על הכפתור כדי להוריד קובץ יומן עם כל התזכורות השבועיות.
+    לחצי על כל כפתור כדי לפתוח את Google Calendar עם אירוע שבועי מוכן. אחרי שהיומן נפתח, לחצי Save / שמירה.
   </p>
 
-  <button
-    onclick="downloadSourdoughCalendar()"
-    class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg shadow">
-    📅 הוסף את כל התזכורות ליומן
-  </button>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <button type="button" onclick="openGoogleCalendarReminder('sunday')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow">
+      📅 ראשון 18:00<br><span class="text-sm font-normal">רענון מחמצת</span>
+    </button>
+    <button type="button" onclick="openGoogleCalendarReminder('wednesday')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow">
+      📅 רביעי 18:00<br><span class="text-sm font-normal">רענון לאפייה</span>
+    </button>
+    <button type="button" onclick="openGoogleCalendarReminder('thursday')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow">
+      📅 חמישי 16:00<br><span class="text-sm font-normal">הכנת בצק</span>
+    </button>
+    <button type="button" onclick="openGoogleCalendarReminder('friday')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow">
+      📅 שישי 08:00<br><span class="text-sm font-normal">תנור + מקרר</span>
+    </button>
+  </div>
 
-  <ul class="mt-4 text-gray-700 space-y-1">
-    <li>ראשון 18:00 – רענון מחמצת</li>
-    <li>רביעי 18:00 – רענון מחמצת לאפייה</li>
-    <li>חמישי 16:00 – הכנת בצק</li>
-    <li>שישי 08:00 – להוציא מהמקרר ולהדליק תנור</li>
-  </ul>
+  <p class="mt-4 text-sm text-amber-800">
+    הערה: צריך לשמור כל אירוע בנפרד בגוגל, כי אלה ארבע תזכורות חוזרות בזמנים שונים.
+  </p>
 </div> 
         <!-- TAB 1: Starter -->
         <section id="starter" class="tab-content block space-y-6">
@@ -1250,74 +1284,47 @@ Thought for 50s
         }
 
 
-        function downloadSourdoughCalendar() {
-            const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Sourdough Space//HE
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VEVENT
-UID:sourdough-sunday-refresh@machmezet
-SUMMARY:רענון מחמצת
-DESCRIPTION:להוציא מחמצת מהמקרר, לרענן ולהאכיל.
-RRULE:FREQ=WEEKLY;BYDAY=SU
-DTSTART:20260705T180000
-DTEND:20260705T181500
-BEGIN:VALARM
-TRIGGER:-PT15M
-ACTION:DISPLAY
-DESCRIPTION:רענון מחמצת בעוד 15 דקות
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:sourdough-wednesday-refresh@machmezet
-SUMMARY:רענון מחמצת לאפייה
-DESCRIPTION:רענון גדול לקראת הכנת הבצק.
-RRULE:FREQ=WEEKLY;BYDAY=WE
-DTSTART:20260708T180000
-DTEND:20260708T181500
-BEGIN:VALARM
-TRIGGER:-PT15M
-ACTION:DISPLAY
-DESCRIPTION:רענון מחמצת לאפייה בעוד 15 דקות
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:sourdough-thursday-dough@machmezet
-SUMMARY:הכנת בצק מחמצת
-DESCRIPTION:אוטוליזה, לישה, קיפולים ועיצוב לקראת לילה במקרר.
-RRULE:FREQ=WEEKLY;BYDAY=TH
-DTSTART:20260709T160000
-DTEND:20260709T210000
-BEGIN:VALARM
-TRIGGER:-PT15M
-ACTION:DISPLAY
-DESCRIPTION:הכנת בצק מחמצת בעוד 15 דקות
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:sourdough-friday-bake@machmezet
-SUMMARY:להוציא מהמקרר ולהדליק תנור
-DESCRIPTION:להוציא את הכיכר מהמקרר, לחמם תנור ל-230 מעלות ולהתכונן לאפייה.
-RRULE:FREQ=WEEKLY;BYDAY=FR
-DTSTART:20260710T080000
-DTEND:20260710T083000
-BEGIN:VALARM
-TRIGGER:-PT15M
-ACTION:DISPLAY
-DESCRIPTION:להוציא מהמקרר ולהדליק תנור בעוד 15 דקות
-END:VALARM
-END:VEVENT
-END:VCALENDAR`;
+        function openGoogleCalendarReminder(reminderKey) {
+            const reminders = {
+                sunday: {
+                    title: 'רענון מחמצת',
+                    details: 'להוציא מחמצת מהמקרר, לרענן ולהאכיל.',
+                    dates: '20260705T180000/20260705T181500',
+                    recur: 'RRULE:FREQ=WEEKLY;BYDAY=SU'
+                },
+                wednesday: {
+                    title: 'רענון מחמצת לאפייה',
+                    details: 'רענון גדול לקראת הכנת הבצק.',
+                    dates: '20260708T180000/20260708T181500',
+                    recur: 'RRULE:FREQ=WEEKLY;BYDAY=WE'
+                },
+                thursday: {
+                    title: 'הכנת בצק מחמצת',
+                    details: 'אוטוליזה, לישה, קיפולים ועיצוב לקראת לילה במקרר.',
+                    dates: '20260709T160000/20260709T210000',
+                    recur: 'RRULE:FREQ=WEEKLY;BYDAY=TH'
+                },
+                friday: {
+                    title: 'להוציא מהמקרר ולהדליק תנור',
+                    details: 'להוציא את הכיכר מהמקרר, לחמם תנור ל-230 מעלות ולהתכונן לאפייה.',
+                    dates: '20260710T080000/20260710T083000',
+                    recur: 'RRULE:FREQ=WEEKLY;BYDAY=FR'
+                }
+            };
 
-            const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "sourdough-reminders.ics";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
+            const reminder = reminders[reminderKey];
+            if (!reminder) return;
+
+            const params = new URLSearchParams({
+                action: 'TEMPLATE',
+                text: reminder.title,
+                dates: reminder.dates,
+                details: reminder.details,
+                recur: reminder.recur,
+                ctz: 'Asia/Jerusalem'
+            });
+
+            window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank');
         }
 
         document.addEventListener('DOMContentLoaded', loadTimers);
